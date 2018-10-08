@@ -5,8 +5,10 @@ const bodyParser = require('body-parser');
 
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
- 
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
 // parse application/json
 app.use(bodyParser.json());
 
@@ -17,17 +19,17 @@ app.get('/usuario', function (req, res) {
 app.post('/usuario', function (req, res) {
     const body = req.body;
 
-    if (body.nombre ===undefined){
+    if (body.nombre === undefined) {
 
         res.status(400).json({
-            ok:false,
+            ok: false,
             mensaje: 'El campo nombre es requerido',
             error: 'descripcion detallada del error'
         });
     }
 
     res.json({
-        persona:body
+        persona: body
     });
 });
 
