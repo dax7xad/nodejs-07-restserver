@@ -75,7 +75,7 @@ app.post('/usuario', function (req, res) {
 
 app.put('/usuario/:id', function (req, res) {
     const id = req.params.id;
-    const body = _.pick(req.body, ['nombre', 'img', 'role', 'estado'])
+    const body = _.pick(req.body, ['nombre', 'img', 'role', 'estado']);
 
 
     Usuario.findByIdAndUpdate(id, body, {
@@ -101,7 +101,7 @@ app.delete('/usuario/:id', function (req, res) {
     let id = req.params.id;
     const cambiaEstado = {
         estado:false
-    }
+    };
     // Usuario.findByIdAndRemove(id , (err, usuarioBorrado ) => {
     Usuario.findByIdAndUpdate(id, cambiaEstado,{ new: true },  (err, usuarioBorrado) => {
         if (err) {
