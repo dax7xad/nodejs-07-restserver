@@ -6,7 +6,42 @@ const Usuario = require('../models/usuario');
 const app = express();
 
 app.get('/usuario', function (req, res) {
-    res.json('get Usuario');
+
+    let desde = req.query.desde || 0;
+    let limite = req.query.limite || 5;
+    desde = Number(desde);
+    limite = Number(limite);
+    Usuario.find({})
+        .skip(desde)
+        .limit(limite)
+        .exec((err, usuarios) => {
+
+            // en caso que el callback devuelva un error
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+
+
+            Usuario.count({}, (err, conteo) => {
+
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        err
+                    });
+                }
+                // En caso exitoso
+                return res.json({
+                    ok: true,
+                    usuarios,
+                    total: conteo
+                });
+            });
+        });
+
 });
 
 app.post('/usuario', function (req, res) {
@@ -40,7 +75,7 @@ app.post('/usuario', function (req, res) {
 
 app.put('/usuario/:id', function (req, res) {
     const id = req.params.id;
-    const body = _.pick(req.body,['nombre','img','role','estado'])
+    const body = _.pick(req.body, ['nombre', 'img', 'role', 'estado'])
 
 
     Usuario.findByIdAndUpdate(id, body, {
