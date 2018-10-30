@@ -46,7 +46,7 @@ app.get('/usuario', verificaToken,  (req, res) => {
 
 });
 
-app.post('/usuario', function (req, res) {
+app.post('/usuario', verificaToken,  (req, res) => {
     const body = req.body;
 
     const usuario = new Usuario({
@@ -75,7 +75,7 @@ app.post('/usuario', function (req, res) {
     });
 });
 
-app.put('/usuario/:id', function (req, res) {
+app.put('/usuario/:id', verificaToken ,  (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['nombre', 'img', 'role', 'estado']);
 
@@ -99,7 +99,7 @@ app.put('/usuario/:id', function (req, res) {
     });
 });
 
-app.delete('/usuario/:id', function (req, res) {
+app.delete('/usuario/:id', verificaToken , (req, res) => {
     let id = req.params.id;
     const cambiaEstado = {
         estado:false
