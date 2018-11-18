@@ -96,79 +96,78 @@ app.post("/google", async (req, res) => {
             });
         });
 
-        // Verificar que no exista el usuario en la base de datos
-        Usuario.findOne({email: googleuser.email}, (err, usuarioDB) => {
+    // Verificar que no exista el usuario en la base de datos
+    Usuario.findOne({
+        email: googleuser.email
+    }, (err, usuarioDB) => {
 
-            if (err) {
-                return res.status(500).json({
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+
+        // Usuario existente
+        if (usuarioDB) {
+            // Usuario que se registro con una autenticacion normal e intenta ahora registrar con google
+            if (usuarioDB.google === false) {
+                return res.status(400).json({
                     ok: false,
-                    err
-                });
-            }
-
-            // Usuario existente
-            if ( usuarioDB ) {
-                    // Usuario que se registro con una autenticacion normal e intenta ahora registrar con google
-                if (usuarioDB.google === false){
-                        return res.status(400).json({
-                            ok: false,
-                            err:{
-                                message: 'Debe de usar la autenticacion por normal'
-                            }
-                        });
-                     // El usuario ya existe en la base de datos con autenticacion de google   
-                    } else {
-                        const token = jwt.sign({
-                            usuario: usuarioDB
-                        }, process.env.SEED, {
-                            expiresIn: process.env.CADUDAD_TOKEN
-                        });
-                        
-                        return res.json({
-                            ok:true,
-                            usuario: usuarioDB,
-                            token                            
-                        });
-
-                }
-            } else {
-                // Si el usuario no existe en la base de datos
-                let usuario = new Usuario();
-
-                usuario.nombre = googleuser.nombre;
-                usuario.email = googleuser.email;
-                usuario.img = googleuser.img;
-                usuario.google=true;
-                usuario.password = googleuser.password;
-
-                usuario.save( (err, usuarioDB) => {
-
-                    if (err) {
-                        return res.status(500).json({
-                            ok: false,
-                            err
-                        });
+                    err: {
+                        message: 'Debe de usar la autenticacion por normal'
                     }
-
-                    const token = jwt.sign({
-                        usuario: usuarioDB
-                    }, process.env.SEED, {
-                        expiresIn: process.env.CADUDAD_TOKEN
-                    });
-                    
-                    return res.json({
-                        ok:true,
-                        usuario: usuarioDB,
-                        token
-                    });
-
                 });
+                // El usuario ya existe en la base de datos con autenticacion de google   
+            } else {
+                const token = jwt.sign({
+                    usuario: usuarioDB
+                }, process.env.SEED, {
+                    expiresIn: process.env.CADUDAD_TOKEN
+                });
+
+                return res.json({
+                    ok: true,
+                    usuario: usuarioDB,
+                    token
+                });
+
             }
+        } else {
+            // Si el usuario no existe en la base de datos
+            let usuario = new Usuario();
 
-        });
+            usuario.nombre = googleuser.nombre;
+            usuario.email = googleuser.email;
+            usuario.img = googleuser.img;
+            usuario.google = true;
+            usuario.password = googleuser.password;
 
+            usuario.save((err, usuarioDB) => {
 
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        err
+                    });
+                }
 
+                const token = jwt.sign({
+                    usuario: usuarioDB
+                }, process.env.SEED, {
+                    expiresIn: process.env.CADUDAD_TOKEN
+                });
+
+                return res.json({
+                    ok: true,
+                    usuario: usuarioDB,
+                    token
+                });
+
+            });
+        }
+
+    });
 
 });
 
